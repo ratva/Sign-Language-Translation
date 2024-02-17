@@ -1,0 +1,60 @@
+html {
+        height: 100%;
+}
+
+body {
+        height: 100%;
+        background-color: salmon;
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+
+}
+
+.text {
+        margin: 20px;
+        padding: 20px;
+
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+
+        color: white;
+}
+
+h1 {
+       font-size: 50px;
+}
+
+h2 {
+        font-size: 30px;  
+}
+
+.textToSpeech {
+        margin: 20px;
+        padding: 20px;  
+        color: white;
+}
+
+#container {
+        text-align: center;
+}
+
+#video {
+        width: 100%;
+        max-width: 600px;
+}
+#capture-btn {
+        margin-top: 10px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+}
+
+#canvas {
+        display: none;
+}

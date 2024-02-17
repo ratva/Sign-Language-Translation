@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Language to Speech</title>
+
+    <link rel="stylesheet" href="includes/reset.css">  
+    <link rel="stylesheet" href="includes/styles.css"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <h1 class="text">Provide signs here</h1>
+    <div id="container">
+        <video id="video" autoplay></video>
+        <button id="capture-btn">Take Picture</button>
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture-btn');
+        const constraints = {video: true};
+
+        // Access webcam
+        async function init() {
+        try {
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                handleSuccess(stream);
+        } catch (error) {
+                console.error('Error accessing webcam: ', error);
+        }
+        }
+
+        // Success callback for accessing webcam
+        function handleSuccess(stream) {
+        video.srcObject = stream;
+        }
+
+        // Capture image from webcam
+        captureButton.addEventListener('click', function() {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // Convert canvas to image data
+        const imageDataURL = canvas.toDataURL('image/png');
+        // Display captured image
+        const image = new Image();
+        image.src = imageDataURL;
+        document.body.appendChild(image);
+        });
+
+        // Initialize webcam
+        init();
+        </script>
+        <div class="textToSpeech">
+                <h2 class="text"> Translation: <br> </h2>
+
+                <input type="text" id="text" placeholder="Enter text here." value="">
+                <button onclick="textToSpeech()">Speak</button>
+
+                <script>
+                function textToSpeech() {
+                var msg = new SpeechSynthesisUtterance();
+                var text = document.getElementById('text').value;
+                msg.text = text;
+                window.speechSynthesis.speak(msg);
+                }
+                </script>
+        </div>
+</body>
+</html>
