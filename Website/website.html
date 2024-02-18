@@ -65,15 +65,15 @@
         // Initialize text to speech
         </script>
         <div class="textToSpeech">
-            <h2 class="text"> Translation: <br> </h2>
-
+            <!-- <h2 class="text"> Translation: <br> </h2> -->
+<!-- 
             <input type="text" id="text" placeholder="Enter text here." value="">
-            <button onclick="textToSpeech()">Speak</button>
+            <button onclick="textToSpeech()">Speak</button> -->
 
             <script>
-                function textToSpeech() {
+                function textToSpeech(input) {
                     var msg = new SpeechSynthesisUtterance();
-                    var text = document.getElementById('text').value;
+                    var text = input;
                     msg.text = text;
                     window.speechSynthesis.speak(msg);
                 }
@@ -92,7 +92,8 @@
 
                 // the link to your model provided by Teachable Machine export panel
                 // Model trained on 1:4, <20 images per class
-                const URL = "https://teachablemachine.withgoogle.com/models/GbAEsvtjB/"
+                const URL = "https://teachablemachine.withgoogle.com/models/GbAEsvtjB/" //0-9
+                // const URL = "https://teachablemachine.withgoogle.com/models/tk9AAceh0/"
 
                 let model, webcam, labelContainer, maxPredictions;
 
@@ -110,7 +111,7 @@
 
                     // Convenience function to setup a webcam
                     const flip = true; // whether to flip the webcam
-                    webcam = new tmImage.Webcam(512, 512, flip); // width, height, flip
+                    webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
                     await webcam.setup(); // request access to the webcam
                     await webcam.play();
                     window.requestAnimationFrame(loop);
@@ -130,15 +131,80 @@
                 }
 
                 // run the webcam image through the image model
+                // async function predict() {
+                //     // predict can take in an image, video or canvas html element
+                //     const prediction = await model.predict(webcam.canvas);
+                //     for (let i = 0; i < maxPredictions; i++) {
+                        
+                //         const classPrediction =
+                //             prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                //         labelContainer.childNodes[i].innerHTML = classPrediction;
+                //     }
+                //     maxPred = max(prediction);
+                // }
+
+                // // Only max probability and value
+                // async function predict() {
+                // // predict can take in an image, video or canvas html element
+                //     const prediction = await model.predict(webcam.canvas);
+                //     let maxProbability = -1;
+                //     let maxClass = null;
+
+                //     for (let i = 0; i < maxPredictions; i++) {
+                //         if(prediction[i].probability > maxProbability) {
+                //             maxProbability = prediction[i].probability;
+                //             maxClass = prediction[i].className;
+                //         }
+                //     }
+
+                //     const classPrediction = maxClass + ": " + maxProbability.toFixed(2);
+                //     labelContainer.childNodes[0].innerHTML = classPrediction;
+                // }
+
+                let predictions = [];
+                let intervalId = null;
+
+                // Create a new div for the text output
+                let textOutput = document.createElement('div');
+                textOutput.style.overflowY = 'scroll';
+                textOutput.style.height = '200px'; // adjust this value as needed
+                document.body.appendChild(textOutput);
+
                 async function predict() {
-                    // predict can take in an image, video or canvas html element
-                    const prediction = await model.predict(webcam.canvas);
-                    for (let i = 0; i < maxPredictions; i++) {
-                        const classPrediction =
-                            prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                        labelContainer.childNodes[i].innerHTML = classPrediction;
-                    }
+                // predict can take in an image, video or canvas html element
+                const prediction = await model.predict(webcam.canvas);
+                predictions.push(prediction);
+
+                if (!intervalId) {
+                    intervalId = setInterval(() => {
+                        let maxClass = null;
+                        let maxClassProbabilities = [];
+
+                        for (let prediction of predictions) {
+                            let maxProbability = -1;
+                            for (let i = 0; i < maxPredictions; i++) {
+                                if (prediction[i].probability > maxProbability) {
+                                    maxProbability = prediction[i].probability;
+                                    maxClass = prediction[i].className;
+                                }
+                            }
+                            maxClassProbabilities.push(maxProbability);
+                        }
+
+                        textToSpeech(maxClass)
+                        const averageProbability = maxClassProbabilities.reduce((a, b) => a + b, 0) / maxClassProbabilities.length;
+                        const classPrediction = maxClass + ": " + averageProbability.toFixed(2);
+                        labelContainer.childNodes[0].innerHTML = classPrediction;
+
+                        // Add a new line to the text output
+                        let textNode = document.createTextNode(maxClass + '\n');
+                        textOutput.appendChild(textNode);
+                        // textOutput.scrollTop = textOutput.scrollHeight;
+                        // Reset predictions
+                        predictions = [];
+                    }, 3000); // 1 seconds
                 }
+            }
             </script>
 
 </body>

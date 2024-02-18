@@ -3,13 +3,16 @@ html {
 }
 
 body {
-        height: 100%;
+        text-align: center; /* Align text to the center */
+        /* display: flex;
+        justify-content: center; /* Center horizontally */
+        /* align-items: center; Center vertically */ */
+        height: 100vh; /* Ensure full height of the viewport */
+        margin: 0; /* Remove default margin */
         background-color: salmon;
         font-family: "Fredoka", sans-serif;
         font-optical-sizing: auto;
-        font-weight: <weight>;
         font-style: normal;
-
 }
 
 .text {
@@ -18,7 +21,6 @@ body {
 
         font-family: "Fredoka", sans-serif;
         font-optical-sizing: auto;
-        font-weight: <weight>;
         font-style: normal;
 
         color: white;
@@ -77,4 +79,17 @@ textarea {
 label {
         display: block;
         margin-bottom: 10px;
+}
+
+#label-container {
+        font-size: 30px;
+        font-family: "Fredoka", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: <weight>;
+        font-style: normal;
+        color: white;
+}
+    
+#webcam-container {
+        align: center;
 }
