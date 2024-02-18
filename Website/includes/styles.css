@@ -3,12 +3,14 @@ html {
 }
 
 body {
-        text-align: center; /* Align text to the center */
         /* display: flex;
         justify-content: center; /* Center horizontally */
-        /* align-items: center; Center vertically */ */
         height: 100vh; /* Ensure full height of the viewport */
-        margin: 0; /* Remove default margin */
+        /* display: flex;
+        flex-direction: column; */
+        /* justify-content: center;
+        align-items: center; Center vertically */
+
         background-color: salmon;
         font-family: "Fredoka", sans-serif;
         font-optical-sizing: auto;
@@ -28,6 +30,10 @@ body {
 
 h1 {
        font-size: 50px;
+       /* position: absolute; */
+       /* top: 0px; */
+       width: 100%;
+       text-align: center;
 }
 
 h2 {
@@ -44,10 +50,10 @@ h2 {
         text-align: center;
 }
 
-#video {
+/* #video {
         width: 100%;
-        max-width: 600px;
-}
+        /* max-width: 600px; */
+} */
 #capture-btn {
         margin-top: 10px;
         padding: 10px 20px;
@@ -57,9 +63,9 @@ h2 {
         cursor: pointer;
 }
 
-#canvas {
+/* #canvas {
         display: none;
-}
+} */
 
 label,
 textarea {
@@ -92,13 +98,30 @@ label {
 }
     
 #webcam-container {
-        align: center;
-        width: 200px;
+        /* align: center; */
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 32px;
+        /* width: 512px;
+        height: 512px; */
+        padding: 10px;
+}
+
+#webcam-canvas {
+        
+        width: 800px;
+        height: 800px;
 }
 
 #flex-container {
+
         display: flex;
         flex-direction: row;
+        justify-content: center;
+        gap: 32px;
+        align-items: center;
+        flex: 1;
     }
     
     #video-and-prediction, #log-container {
@@ -109,7 +132,7 @@ label {
         margin-left: 20px;
     }
     
-    #log {
+    /* #log {
         overflow-y: scroll;
-        height: 200px; /* adjust as needed */
-    }
+        height: 512px;
+    } */

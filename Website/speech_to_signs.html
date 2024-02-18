@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio to Text Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #fileInput {
+      margin-bottom: 20px;
+    }
+    #transcription {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Audio to Text Converter</h1>
+  <input type="file" id="fileInput" accept="audio/*">
+  <div id="transcription"></div>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const transcriptionDiv = document.getElementById('transcription');
+
+    fileInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+        transcribeAudio(file);
+      }
+    });
+
+    function transcribeAudio(file) {
+      const recognition = new webkitSpeechRecognition(); // for Chrome
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        displayTranscription(transcript);
+      };
+
+      recognition.onerror = function(event) {
+        console.error('Error occurred while transcribing audio: ', event.error);
+      };
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const audioBlob = event.target.result;
+        recognition.audioURL = URL.createObjectURL(audioBlob);
+        recognition.start();
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    function displayTranscription(transcript) {
+      transcriptionDiv.textContent = 'Transcription: ' + transcript;
+    }
+  </script>
+</body>
+</html>

@@ -15,206 +15,135 @@
 
 <body>
     <h1 class="text">Provide signs here</h1>
-    
-    <!-- <div id="container">
-        <video id="video" autoplay></video>
-        <button id="capture-btn">Take Picture</button>
-        <label for="story">Tell us your story:</label>
-        <textarea id="story" name="story" rows="5" cols="33" readonly>
-        It was a dark and stormy night...
-        </textarea>
-        <canvas id="canvas"></canvas>
-    </div> -->
-
-    <script>
-        // const video = document.getElementById('video');
-        // const canvas = document.getElementById('canvas');
-        // const captureButton = document.getElementById('capture-btn');
-        // const constraints = {video: true};
-
-        // // Access webcam
-        // async function init_webcam() {
-        //     try {
-        //         const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        //         handleSuccess(stream);
-        //     } catch (error) {
-        //         console.error('Error accessing webcam: ', error);
-        //     }
-        // }
-
-        // // Success callback for accessing webcam
-        // function handleSuccess(stream) {
-        //     video.srcObject = stream;
-        // }
-
-        // // Capture image from webcam
-        // captureButton.addEventListener('click', function() {
-        // const context = canvas.getContext('2d');
-        // canvas.width = video.videoWidth;
-        // canvas.height = video.videoHeight;
-        // context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        // // Convert canvas to image data
-        // const imageDataURL = canvas.toDataURL('image/png');
-        // // Display captured image
-        // const image = new Image();
-        // image.src = imageDataURL;
-        // document.body.appendChild(image);
-        // });
-        // init_webcam();
-
-        // Initialize text to speech
-        </script>
-        <div class="textToSpeech">
-            <!-- <h2 class="text"> Translation: <br> </h2> -->
-<!-- 
-            <input type="text" id="text" placeholder="Enter text here." value="">
-            <button onclick="textToSpeech()">Speak</button> -->
-
-            <script>
-                function textToSpeech(input) {
-                    var msg = new SpeechSynthesisUtterance();
-                    var text = input;
-                    msg.text = text;
-                    window.speechSynthesis.speak(msg);
-                }
-            </script>
-        </div>
-
-        <div>Teachable Machine Image Model</div>
-            <button type="button" onclick="init()">Start</button>
-            <div id="webcam-container">
-                <canvas id="webcam-canvas"></canvas>
-                <div id="prediction-label"></div>
-            </div>
-            
-            <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-            <script type="text/javascript">
-                // More API functions here:
-                // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
-
-                // the link to your model provided by Teachable Machine export panel
-                // Model trained on 1:4, <20 images per class
-                // const URL = "https://teachablemachine.withgoogle.com/models/GbAEsvtjB/" //0-9
-                const URL = "https://teachablemachine.withgoogle.com/models/tk9AAceh0/" //A-Z
-
-                let model, webcam, labelContainer, maxPredictions;
-
-                // Load the image model and setup the webcam
-                async function init() {
-                    const modelURL = URL + "model.json";
-                    const metadataURL = URL + "metadata.json";
-
-                    // load the model and metadata
-                    // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
-                    // or files from your local hard drive
-                    // Note: the pose library adds "tmImage" object to your window (window.tmImage)
-                    model = await tmImage.load(modelURL, metadataURL);
-                    maxPredictions = model.getTotalClasses();
-
-                    // Convenience function to setup a webcam
-                    const flip = true; // whether to flip the webcam
-                    webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
-                    await webcam.setup(); // request access to the webcam
-                    await webcam.play();
-                    window.requestAnimationFrame(loop);
-                    
-                    // Get the canvas element and set it as the canvas for the webcam
-                    let webcamCanvas = document.getElementById("webcam-canvas");
-                    webcam.canvas = webcamCanvas;
-                    
-                    // append elements to the Log
-                    labelContainer = document.getElementById("prediction-label");
-                    for (let i = 0; i < maxPredictions; i++) { // and class labels
-                        labelContainer.appendChild(document.createElement("div"));
-                    }
-                }
-
-                async function loop() {
-                    webcam.update(); // update the webcam frame
-                    await predict();
-                    window.requestAnimationFrame(loop);
-                }
-
-                // run the webcam image through the image model
-                // async function predict() {
-                //     // predict can take in an image, video or canvas html element
-                //     const prediction = await model.predict(webcam.canvas);
-                //     for (let i = 0; i < maxPredictions; i++) {
-                        
-                //         const classPrediction =
-                //             prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                //         labelContainer.childNodes[i].innerHTML = classPrediction;
-                //     }
-                //     maxPred = max(prediction);
-                // }
-
-                // // Only max probability and value
-                // async function predict() {
-                // // predict can take in an image, video or canvas html element
-                //     const prediction = await model.predict(webcam.canvas);
-                //     let maxProbability = -1;
-                //     let maxClass = null;
-
-                //     for (let i = 0; i < maxPredictions; i++) {
-                //         if(prediction[i].probability > maxProbability) {
-                //             maxProbability = prediction[i].probability;
-                //             maxClass = prediction[i].className;
-                //         }
-                //     }
-
-                //     const classPrediction = maxClass + ": " + maxProbability.toFixed(2);
-                //     labelContainer.childNodes[0].innerHTML = classPrediction;
-                // }
-
-                let predictions = [];
-                let intervalId = null;
-
-                // Create a new div for the text output
-                let textOutput = document.createElement('div');
-                textOutput.style.overflowY = 'scroll';
-                textOutput.style.height = '200px'; // adjust this value as needed
-                textOutput.style.width = '200px'; // adjust this value as needed
-                document.body.appendChild(textOutput);
-
-                async function predict() {
-                // predict can take in an image, video or canvas html element
-                const prediction = await model.predict(webcam.canvas);
-                predictions.push(prediction);
-
-                if (!intervalId) {
-                    intervalId = setInterval(() => {
-                        let maxClass = null;
-                        let maxClassProbabilities = [];
-
-                        for (let prediction of predictions) {
-                            let maxProbability = -1;
-                            for (let i = 0; i < maxPredictions; i++) {
-                                if (prediction[i].probability > maxProbability) {
-                                    maxProbability = prediction[i].probability;
-                                    maxClass = prediction[i].className;
-                                }
-                            }
-                            maxClassProbabilities.push(maxProbability);
-                        }
-
-                        textToSpeech(maxClass)
-                        const averageProbability = maxClassProbabilities.reduce((a, b) => a + b, 0) / maxClassProbabilities.length;
-                        const classPrediction = maxClass + ": " + averageProbability.toFixed(2);
-                        labelContainer.childNodes[0].innerHTML = classPrediction;
-
-                        // Add a new line to the text output
-                        let textNode = document.createTextNode(maxClass + '<br>');
-                        // textOutput.appendChild(textNode);
-                        textOutput.innerHTML += maxClass + '<br>';
-                        textOutput.scrollTop = textOutput.scrollHeight;
-
-                        // Reset predictions
-                        predictions = [];
-                    }, 3000); // 1 seconds
-                }
+    <div class="textToSpeech">
+        <script>
+            function textToSpeech(input) {
+                var msg = new SpeechSynthesisUtterance();
+                var text = input;
+                msg.text = text;
+                window.speechSynthesis.speak(msg);
             }
-            </script>
+        </script>
+    </div>
 
+    <div id="flex-container">
+        
+        <div id="webcam-container">
+            <button type="button" onclick="init()">Start</button>
+            <canvas id="webcam-canvas"></canvas>
+            <div id="prediction-label"></div>
+        </div>
+        
+        <div id="textOutput"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        // More API functions here:
+        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+        // the link to your model provided by Teachable Machine export panel
+        // Model trained on 1:4, <20 images per class
+        // const URL = "https://teachablemachine.withgoogle.com/models/GbAEsvtjB/" //0-9
+        // const URL = "https://teachablemachine.withgoogle.com/models/tk9AAceh0/" //A-Z
+        const URL = "https://teachablemachine.withgoogle.com/models/tk9AAceh0/" //A-Z
+
+
+        let model, webcam, labelContainer, maxPredictions;
+
+        // Load the image model and setup the webcam
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            // load the model and metadata
+            // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+            // or files from your local hard drive
+            // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            // Convenience function to setup a webcam
+            const flip = true; // whether to flip the webcam
+            webcam = new tmImage.Webcam(512, 512, flip); // width, height, flip
+            await webcam.setup(); // request access to the webcam
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            // remove the old canvas if it exists
+            let oldCanvas = document.getElementsByTagName("canvas")[0];
+            console.log(oldCanvas);
+            if (oldCanvas) {
+                oldCanvas.remove();
+            }
+
+            // append webcam canvas to the webcam container
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            
+            // Get the canvas element and set it as the canvas for the webcam
+            // let webcamCanvas = document.getElementById("webcam-canvas");
+            // webcam.canvas = webcamCanvas;
+            
+            // append elements to the Log
+            labelContainer = document.getElementById("prediction-label");
+            for (let i = 0; i < maxPredictions; i++) { // and class labels
+                labelContainer.appendChild(document.createElement("div"));
+            }
+        }
+
+        async function loop() {
+            webcam.update(); // update the webcam frame
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        let predictions = [];
+        let intervalId = null;
+
+        // Create a new div for the text output
+        let textOutput = document.getElementById('textOutput');
+        textOutput.style.overflowY = 'scroll';
+        // textOutput.style.height = '200px'; // adjust this value as needed
+        textOutput.style.width = '200px'; // adjust this value as needed
+
+        async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
+        predictions.push(prediction);
+
+        if (!intervalId) {
+            intervalId = setInterval(() => {
+                let maxClass = null;
+                let maxClassProbabilities = [];
+
+                for (let prediction of predictions) {
+                    let maxProbability = -1;
+                    for (let i = 0; i < maxPredictions; i++) {
+                        if (prediction[i].probability > maxProbability) {
+                            maxProbability = prediction[i].probability;
+                            maxClass = prediction[i].className;
+                        }
+                    }
+                    maxClassProbabilities.push(maxProbability);
+                }
+
+                textToSpeech(maxClass)
+                const averageProbability = maxClassProbabilities.reduce((a, b) => a + b, 0) / maxClassProbabilities.length;
+                const classPrediction = maxClass + ": " + averageProbability.toFixed(2);
+                labelContainer.childNodes[0].innerHTML = classPrediction;
+
+                // Add a new line to the text output
+                let textNode = document.createTextNode(maxClass + '<br>');
+                // textOutput.appendChild(textNode);
+                textOutput.innerHTML += maxClass + '<br>';
+                textOutput.scrollTop = textOutput.scrollHeight;
+
+                // Reset predictions
+                predictions = [];
+            }, 3000); // 1 seconds
+        }
+    }
+    </script>
 </body>
 </html>
