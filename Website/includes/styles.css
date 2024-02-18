@@ -88,8 +88,28 @@ label {
         font-weight: <weight>;
         font-style: normal;
         color: white;
+        width: 200px;
 }
     
 #webcam-container {
         align: center;
+        width: 200px;
 }
+
+#flex-container {
+        display: flex;
+        flex-direction: row;
+    }
+    
+    #video-and-prediction, #log-container {
+        width: 50%; /* adjust as needed */
+    }
+    
+    #log-container {
+        margin-left: 20px;
+    }
+    
+    #log {
+        overflow-y: scroll;
+        height: 200px; /* adjust as needed */
+    }

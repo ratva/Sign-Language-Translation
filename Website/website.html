@@ -82,8 +82,11 @@
 
         <div>Teachable Machine Image Model</div>
             <button type="button" onclick="init()">Start</button>
-            <div id="webcam-container"></div>
-            <div id="label-container"></div>
+            <div id="webcam-container">
+                <canvas id="webcam-canvas"></canvas>
+                <div id="prediction-label"></div>
+            </div>
+            
             <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
             <script type="text/javascript">
@@ -92,8 +95,8 @@
 
                 // the link to your model provided by Teachable Machine export panel
                 // Model trained on 1:4, <20 images per class
-                const URL = "https://teachablemachine.withgoogle.com/models/GbAEsvtjB/" //0-9
-                // const URL = "https://teachablemachine.withgoogle.com/models/tk9AAceh0/"
+                // const URL = "https://teachablemachine.withgoogle.com/models/GbAEsvtjB/" //0-9
+                const URL = "https://teachablemachine.withgoogle.com/models/tk9AAceh0/" //A-Z
 
                 let model, webcam, labelContainer, maxPredictions;
 
@@ -115,10 +118,13 @@
                     await webcam.setup(); // request access to the webcam
                     await webcam.play();
                     window.requestAnimationFrame(loop);
-
-                    // append elements to the DOM
-                    document.getElementById("webcam-container").appendChild(webcam.canvas);
-                    labelContainer = document.getElementById("label-container");
+                    
+                    // Get the canvas element and set it as the canvas for the webcam
+                    let webcamCanvas = document.getElementById("webcam-canvas");
+                    webcam.canvas = webcamCanvas;
+                    
+                    // append elements to the Log
+                    labelContainer = document.getElementById("prediction-label");
                     for (let i = 0; i < maxPredictions; i++) { // and class labels
                         labelContainer.appendChild(document.createElement("div"));
                     }
@@ -168,6 +174,7 @@
                 let textOutput = document.createElement('div');
                 textOutput.style.overflowY = 'scroll';
                 textOutput.style.height = '200px'; // adjust this value as needed
+                textOutput.style.width = '200px'; // adjust this value as needed
                 document.body.appendChild(textOutput);
 
                 async function predict() {
@@ -197,9 +204,11 @@
                         labelContainer.childNodes[0].innerHTML = classPrediction;
 
                         // Add a new line to the text output
-                        let textNode = document.createTextNode(maxClass + '\n');
-                        textOutput.appendChild(textNode);
-                        // textOutput.scrollTop = textOutput.scrollHeight;
+                        let textNode = document.createTextNode(maxClass + '<br>');
+                        // textOutput.appendChild(textNode);
+                        textOutput.innerHTML += maxClass + '<br>';
+                        textOutput.scrollTop = textOutput.scrollHeight;
+
                         // Reset predictions
                         predictions = [];
                     }, 3000); // 1 seconds
