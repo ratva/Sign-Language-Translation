@@ -5,7 +5,8 @@ html {
 body {
         /* display: flex;
         justify-content: center; /* Center horizontally */
-        height: 100vh; /* Ensure full height of the viewport */
+        height: 100vh;
+        overflow: hidden;
         /* display: flex;
         flex-direction: column; */
         /* justify-content: center;
@@ -102,7 +103,7 @@ label {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 32px;
+        gap: 20px;
         /* width: 512px;
         height: 512px; */
         padding: 10px;
@@ -110,16 +111,26 @@ label {
 
 #webcam-canvas {
         
-        width: 800px;
-        height: 800px;
+        width: 550px;
+        height: 550px;
 }
+
+#textOutput {
+        height: 380px; /* adjust as needed */
+        width:100px;
+        margin-top: 57px;
+        overflow-y: auto;
+    }
+
+#textOutput::-webkit-scrollbar {
+        display: none;}
 
 #flex-container {
 
         display: flex;
         flex-direction: row;
         justify-content: center;
-        gap: 32px;
+        gap: 100px;
         align-items: center;
         flex: 1;
     }
